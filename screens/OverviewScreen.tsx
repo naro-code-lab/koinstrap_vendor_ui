@@ -84,6 +84,8 @@ export default function OverviewScreen({ navigation }) {
         </Text>
       </View>
 
+      <View></View>
+
       <View style={{ paddingHorizontal: 15 }}>
         <Button size="giant">Copy reference</Button>
       </View>
