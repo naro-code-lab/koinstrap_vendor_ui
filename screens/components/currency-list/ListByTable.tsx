@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Text } from "@ui-kitten/components";
 import { View, TouchableOpacity, Image } from "react-native";
 import useScreenSize from "../../../hooks/useScreenSize";
 import { useNavigation } from "@react-navigation/core";
+import { MainApiContext } from "../../../contexts/ApiContexts";
+
+import currencyLogos from "../../../assets/images/currencies";
 
 export default function ListByTable({ theme }) {
   const isSmallDevice = useScreenSize();
   const navigation = useNavigation();
+
+  const { currencies = [], setCurrency } = useContext(MainApiContext);
 
   return (
     <View style={[!isSmallDevice && { alignItems: "center" }]}>
@@ -33,12 +38,17 @@ export default function ListByTable({ theme }) {
           },
         ]}
       >
-        {[1, 2, 3, 4, 5].map((hh) => (
+        {currencies.map((currency, index) => (
           <CanPressOrNot
             isSmallDevice={isSmallDevice}
-            onPress={() => navigation.navigate("Buy")}
+            onPress={() => {
+              setCurrency(currency);
+              navigation.navigate("Buy", { currency: currency.currency });
+            }}
+            key={currency.currency}
           >
             <View
+              key={currency.currency}
               style={[
                 {
                   flexDirection: "row",
@@ -50,7 +60,7 @@ export default function ListByTable({ theme }) {
               <View style={{ paddingRight: 10 }}>
                 <View style={{ height: 30, width: 30 }}>
                   <Image
-                    source={require("../../../assets/images/currencies/bitcoin.png")}
+                    source={currencyLogos[currency.currency]}
                     style={{ height: undefined, width: undefined, flex: 1 }}
                   />
                 </View>
@@ -64,10 +74,10 @@ export default function ListByTable({ theme }) {
                   },
                 ]}
               >
-                <Text category="s1">Bitcoin</Text>
+                <Text category="s1">{currency.display_name}</Text>
                 <View style={{ paddingTop: 5 }} />
                 <Text appearance="hint" category="c1">
-                  BTC
+                  {currency.currency}
                 </Text>
                 {isSmallDevice && <Text>NGN 18,668,970.00</Text>}
               </View>
@@ -82,18 +92,27 @@ export default function ListByTable({ theme }) {
                   },
                 ]}
               >
-                <Text>Buy: 500/NGN</Text>
+                <Text>Buy: {currency.buy_rate}/NGN</Text>
                 <View style={{ paddingTop: 5 }} />
-                <Text>Sell: 502/NGN</Text>
+                <Text>Sell: {currency.sell_rate}/NGN</Text>
               </View>
               {!isSmallDevice && (
                 <>
                   <View style={{ flex: 1, paddingRight: 10 }}>
-                    <Text>NGN 18,668,970,123.00</Text>
+                    <Text>
+                      NGN{" "}
+                      {(currency.price * currency.buy_rate).toLocaleString()}
+                    </Text>
                   </View>
 
                   <View style={{ flex: 1, paddingRight: 10 }}>
-                    <Text status="danger"> -1.77%</Text>
+                    <Text
+                      status={
+                        currency.change_percentage >= 0 ? "success" : "danger"
+                      }
+                    >
+                      {currency.change_percentage} %
+                    </Text>
                   </View>
                 </>
               )}
@@ -102,7 +121,12 @@ export default function ListByTable({ theme }) {
                 <View style={{}}>
                   <Button
                     size="small"
-                    onPress={() => navigation.navigate("Buy")}
+                    onPress={() => {
+                      setCurrency(currency);
+                      navigation.navigate("Buy", {
+                        currency: currency.currency,
+                      });
+                    }}
                   >
                     Trade
                   </Button>
@@ -118,7 +142,11 @@ export default function ListByTable({ theme }) {
 
 const CanPressOrNot = ({ onPress, children, isSmallDevice }) => {
   if (isSmallDevice) {
-    return <TouchableOpacity onPress={onPress}>{children}</TouchableOpacity>;
+    return (
+      <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
+        {children}
+      </TouchableOpacity>
+    );
   }
   return <>{children}</>;
 };

@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "@ui-kitten/components";
 import { View, Image } from "react-native";
 
-export default function SplitColor({ theme }) {
+export default function SplitColor({ theme, intro, tagline }) {
   return (
     <View
       style={{
@@ -15,11 +15,11 @@ export default function SplitColor({ theme }) {
         style={{
           flex: 1,
           alignItems: "center",
-          backgroundColor: theme["color-danger-400"],
+          backgroundColor: theme["color-primary-400"],
         }}
       />
 
-      <View style={{ flex: 1, backgroundColor: theme["color-danger-600"] }} />
+      <View style={{ flex: 1, backgroundColor: theme["color-primary-600"] }} />
 
       <View
         style={{
@@ -39,7 +39,7 @@ export default function SplitColor({ theme }) {
               appearance="alternative"
               style={{ textAlign: "center" }}
             >
-              Welcome to Wart's exchange
+              {intro}
             </Text>
 
             <View style={{ paddingTop: 10 }} />
@@ -50,7 +50,7 @@ export default function SplitColor({ theme }) {
               appearance="alternative"
               style={{ textAlign: "center" }}
             >
-              Buy, sell and trade cryptocurrency in mintutes.
+              {tagline}
             </Text>
           </View>
         </View>

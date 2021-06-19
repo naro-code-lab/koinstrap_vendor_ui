@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "@ui-kitten/components";
 import { View, Image } from "react-native";
 
-export default function FullColor({ theme }) {
+export default function FullColor({ theme, intro, tagline }) {
   return (
     <View
       style={{
@@ -18,7 +18,7 @@ export default function FullColor({ theme }) {
             appearance="alternative"
             style={{ textAlign: "center" }}
           >
-            Welcome to Wart's exchange
+            {intro}
           </Text>
 
           <View style={{ paddingTop: 10 }} />
@@ -29,7 +29,7 @@ export default function FullColor({ theme }) {
             appearance="alternative"
             style={{ textAlign: "center" }}
           >
-            Buy, sell and trade cryptocurrency in mintutes.
+            {tagline}
           </Text>
         </View>
       </View>

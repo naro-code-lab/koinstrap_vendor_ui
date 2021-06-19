@@ -1,9 +1,11 @@
 import React from "react";
 import { Button, Icon } from "@ui-kitten/components";
 import { View, TouchableOpacity, Image } from "react-native";
+import useScreenSize from "../../../hooks/useScreenSize";
 import { useNavigation } from "@react-navigation/core";
 
 export default function SingleNav({ theme }) {
+  const small = useScreenSize();
   const navigation = useNavigation();
   return (
     <View
@@ -24,8 +26,8 @@ export default function SingleNav({ theme }) {
           backgroundColor: theme["color-basic-100"],
           paddingHorizontal: 30,
           paddingVertical: 15,
-          minWidth: 320,
-          height: 75,
+          minWidth: small ? 240 : 320,
+          height: small ? 50 : 75,
           alignItems: "center",
           justifyContent: "space-between",
           flexDirection: "row",
@@ -44,12 +46,26 @@ export default function SingleNav({ theme }) {
             alignItems: "center",
           }}
         >
-          <Button size="medium" style={{ borderRadius: 400 }}>
-            Contact
-          </Button>
+          {!small ? (
+            <Button size="medium" style={{ borderRadius: 400 }}>
+              Contact
+            </Button>
+          ) : (
+            <>
+              <TouchableOpacity activeOpacity={0.8}>
+                <Icon
+                  name="email-outline"
+                  height={30}
+                  fill={theme["color-primary-600"]}
+                  width={30}
+                />
+              </TouchableOpacity>
+            </>
+          )}
 
           <TouchableOpacity
             activeOpacity={0.8}
+            style={{ paddingLeft: 15 }}
             onPress={() => navigation.navigate("Search")}
           >
             <Icon

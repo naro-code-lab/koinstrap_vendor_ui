@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "@ui-kitten/components";
 import { View, Image } from "react-native";
 
-export default function HalfImage({ theme }) {
+export default function HalfImage({ theme, intro, tagline }) {
   return (
     <View
       style={{
@@ -62,7 +62,7 @@ export default function HalfImage({ theme }) {
               appearance="alternative"
               style={{ textAlign: "center" }}
             >
-              Welcome to Wart's exchange
+              {intro}
             </Text>
 
             <View style={{ paddingTop: 10 }} />
@@ -73,7 +73,7 @@ export default function HalfImage({ theme }) {
               appearance="alternative"
               style={{ textAlign: "center" }}
             >
-              Buy, sell and trade cryptocurrency in mintutes.
+              {tagline}
             </Text>
           </View>
         </View>

@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { TouchableOpacity, View, TextInput, ScrollView } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import {
+  TouchableOpacity,
+  View,
+  TextInput,
+  ScrollView,
+  Alert,
+} from "react-native";
 import {
   Text,
   Icon,
@@ -9,15 +15,93 @@ import {
   Select,
   SelectItem,
   Input,
+  Spinner,
 } from "@ui-kitten/components";
+import Clipboard from "expo-clipboard";
 
 import ModalContainer from "./components/ModalContainer";
 import useScreenSize from "../hooks/useScreenSize";
+import { useAlert } from "react-alert";
+import { MainApiContext } from "../contexts/ApiContexts";
 
 export default function BuyScreen({ navigation }) {
   const theme = useTheme();
   const small = useScreenSize();
-  const [byFiat, setByFiat] = useState(true);
+
+  const alert = useAlert();
+  const {
+    currency,
+    buyCrypto,
+    settings,
+    resolveAccount,
+    loadingAccountResolve,
+    loadingBuyRequest,
+  } = useContext(MainApiContext);
+
+  const [isFiat, setIsFiat] = useState(true);
+  const [amount, setAmount] = useState("0.00");
+  const [cryptoAmount, setCryptoAmount] = useState("0.00");
+  const [address, setAddress] = useState("");
+  const [bank, setBank] = useState("");
+  const [selectBankIndex, setSelectBankIndex] = useState();
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+
+  useEffect(() => {
+    if (isFiat) {
+      setCryptoAmount(amount / currency.fiat_sell_price);
+    }
+    if (!isFiat) {
+      setAmount(cryptoAmount * currency.fiat_sell_price);
+    }
+  }, [isFiat, amount, cryptoAmount]);
+
+  const onClickProceedToPayment = async () => {
+    if (!accountName) {
+      return alert.error("Please enter valid account details");
+    }
+    const { status } = await buyCrypto({
+      amount,
+      address,
+      bank,
+      accountNumber,
+      isFiat,
+      cryptoAmount,
+    });
+
+    if (status) {
+      navigation.replace("Overview");
+    }
+  };
+
+  const onResolveAccount = async () => {
+    const { name, status } = await resolveAccount({
+      bank,
+      accountNumber,
+    });
+
+    if (status) {
+      setAccountName(name);
+    }
+  };
+
+  useEffect(() => {
+    if (accountNumber.length >= 10) {
+      onResolveAccount();
+    } else {
+      setAccountName("");
+    }
+  }, [bank, accountNumber]);
+
+  useEffect(() => {
+    setAccountName("");
+  }, [bank]);
+
+  useEffect(() => {
+    if (selectBankIndex) {
+      setBank(settings.banks[selectBankIndex.row].code);
+    }
+  }, [selectBankIndex]);
 
   return (
     <ModalContainer>
@@ -36,17 +120,19 @@ export default function BuyScreen({ navigation }) {
         >
           <Text category="h6">What do you want to do?</Text>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => navigation.goBack()}
-          >
-            <Icon
-              name="close-circle-outline"
-              height={30}
-              width={30}
-              fill={theme["color-basic-700"]}
-            />
-          </TouchableOpacity>
+          {!loadingBuyRequest && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => navigation.goBack()}
+            >
+              <Icon
+                name="close-circle-outline"
+                height={30}
+                width={30}
+                fill={theme["color-basic-700"]}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View
           style={{
@@ -60,7 +146,7 @@ export default function BuyScreen({ navigation }) {
               style={{ borderRadius: 400 }}
               size={small ? "medium" : "giant"}
             >
-              BUY BTC
+              BUY {currency.currency}
             </Button>
           </View>
           <View style={{ width: 25 }} />
@@ -71,7 +157,7 @@ export default function BuyScreen({ navigation }) {
               appearance="outline"
               onPress={() => navigation.replace("Sell")}
             >
-              SELL BTC
+              SELL {currency.currency}
             </Button>
           </View>
         </View>
@@ -88,39 +174,35 @@ export default function BuyScreen({ navigation }) {
                 borderColor: theme["color-primary-600"],
                 borderRadius: 5,
               }}
+              value={isFiat ? amount : cryptoAmount}
+              onChangeText={(text) => {
+                if (isFiat) {
+                  setAmount(text);
+                }
+
+                if (!isFiat) {
+                  setCryptoAmount(text);
+                }
+              }}
               keyboardType="decimal-pad"
               accessoryRight={() => {
-                if (byFiat) {
+                if (isFiat) {
                   return <></>;
                 }
                 return (
                   <Text status="primary" category="label">
-                    BTC
+                    {currency.currency}
                   </Text>
-                  // <View style={{ flexDirection: "row" }}>
-                  //   <Button size="tiny">NGN</Button>
-                  //   <View style={{ width: 10 }} />
-                  //   <Button size="tiny" appearance="outline">
-                  //     BTC
-                  //   </Button>
-                  // </View>
                 );
               }}
               accessoryLeft={() => {
-                if (!byFiat) {
+                if (!isFiat) {
                   return <></>;
                 }
                 return (
                   <Text status="primary" category="label">
                     NGN
                   </Text>
-                  // <View style={{ flexDirection: "row" }}>
-                  //   <Button size="tiny">NGN</Button>
-                  //   <View style={{ width: 10 }} />
-                  //   <Button size="tiny" appearance="outline">
-                  //     BTC
-                  //   </Button>
-                  // </View>
                 );
               }}
               size="large"
@@ -135,8 +217,13 @@ export default function BuyScreen({ navigation }) {
               justifyContent: "space-between",
             }}
           >
-            <Text category="s2">Apr ~ 0.0000000 BTC </Text>
-            <TouchableOpacity onPress={() => setByFiat(!byFiat)}>
+            <Text category="s2">
+              Approximately{" "}
+              {isFiat
+                ? `${Number(cryptoAmount).toFixed(8)} ${currency.currency}`
+                : `NGN ${amount.toLocaleString()}`}
+            </Text>
+            <TouchableOpacity onPress={() => setIsFiat(!isFiat)}>
               <View
                 style={{
                   flexDirection: "row",
@@ -146,7 +233,7 @@ export default function BuyScreen({ navigation }) {
               >
                 <View style={{ marginRight: 2 }}>
                   <Text category="label" status="danger">
-                    {byFiat ? "By Crypto" : "By Cash"}
+                    {isFiat ? "By Crypto" : "By Cash"}
                   </Text>
                 </View>
                 <Icon
@@ -168,13 +255,29 @@ export default function BuyScreen({ navigation }) {
 
           <View>
             <Input
+              value={address}
+              onChangeText={(e) => setAddress(e)}
               style={{
                 borderWidth: 1,
                 borderColor: theme["color-primary-600"],
                 borderRadius: 5,
               }}
               accessoryRight={() => {
-                return <Button size="tiny">Paste</Button>;
+                return (
+                  <Button
+                    size="tiny"
+                    onPress={async () => {
+                      try {
+                        const clip = await Clipboard.getStringAsync();
+                        setAddress(clip);
+                      } catch (error) {
+                        alert.error("Could not read clipboard");
+                      }
+                    }}
+                  >
+                    Paste
+                  </Button>
+                );
               }}
               size="large"
               placeholder="Enter receiving address"
@@ -211,25 +314,13 @@ export default function BuyScreen({ navigation }) {
                     borderColor: theme["color-primary-600"],
                     borderRadius: 5,
                   }}
+                  value={(settings?.banks ?? [])[selectBankIndex - 1]?.name}
+                  onSelect={(index) => setSelectBankIndex(index)}
+                  selectedIndex={selectBankIndex}
                 >
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
+                  {settings.banks.map((bank) => (
+                    <SelectItem title={bank.name} key={bank.name} />
+                  ))}
                 </Select>
               </View>
               <View style={{ flex: 1, paddingVertical: 15 }}>
@@ -244,13 +335,21 @@ export default function BuyScreen({ navigation }) {
                     borderRadius: 5,
                   }}
                   size="large"
-                  placeholder="Enter Account Number"
+                  value={accountNumber}
+                  placeholder="Enter account number"
+                  onChangeText={(e) => setAccountNumber(e)}
+                  accessoryRight={() => {
+                    if (!loadingAccountResolve) {
+                      return <></>;
+                    }
+                    return <Spinner size="tiny" status="success" />;
+                  }}
                 />
               </View>
             </>
           ) : (
             <View style={{ flexDirection: "row" }}>
-              <View style={{ width: 190 }}>
+              <View style={{ flex: 1 }}>
                 <View style={{ marginBottom: 5 }}>
                   <Text category="s1">Select Bank</Text>
                 </View>
@@ -263,16 +362,19 @@ export default function BuyScreen({ navigation }) {
                     borderColor: theme["color-primary-600"],
                     borderRadius: 5,
                   }}
+                  value={(settings?.banks ?? [])[selectBankIndex - 1]?.name}
+                  onSelect={(index) => setSelectBankIndex(index)}
+                  selectedIndex={selectBankIndex}
                 >
-                  <SelectItem title="Option 1" />
-                  <SelectItem title="Option 2" />
-                  <SelectItem title="Option 3" />
+                  {settings.banks.map((bank) => (
+                    <SelectItem title={bank.name} key={bank.name} />
+                  ))}
                 </Select>
               </View>
 
               <View style={{ width: 10 }} />
 
-              <View style={{ flex: 1 }}>
+              <View style={{ width: 240 }}>
                 <View style={{ marginBottom: 5 }}>
                   <Text category="s1">Account Number</Text>
                 </View>
@@ -284,7 +386,15 @@ export default function BuyScreen({ navigation }) {
                     borderRadius: 5,
                   }}
                   size="large"
-                  placeholder="Enter Account Number"
+                  value={accountNumber}
+                  placeholder="Enter account number"
+                  onChangeText={(e) => setAccountNumber(e)}
+                  accessoryRight={() => {
+                    if (!loadingAccountResolve) {
+                      return <></>;
+                    }
+                    return <Spinner size="tiny" status="success" />;
+                  }}
                 />
               </View>
             </View>
@@ -302,16 +412,30 @@ export default function BuyScreen({ navigation }) {
                 borderRadius: 5,
               }}
               size="large"
-              placeholder="Enter full Account Name"
+              value={accountName}
+              placeholder="Enter full account name"
+              editable={false}
             />
           </View>
 
           <View style={{ paddingTop: 15 }}>
             <Button
               size="giant"
-              onPress={() => navigation.navigate("Overview")}
+              onPress={() => {
+                if (loadingBuyRequest) {
+                  return;
+                }
+                onClickProceedToPayment();
+              }}
+              accessoryLeft={() => {
+                if (!loadingBuyRequest) {
+                  return <></>;
+                }
+
+                return <Spinner size="small" status="control" />;
+              }}
             >
-              Proceed to Payment
+              {loadingBuyRequest ? "Processing" : "Proceed to Payment"}
             </Button>
           </View>
         </View>

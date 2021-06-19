@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Text, Divider } from "@ui-kitten/components";
 import { View, Image } from "react-native";
 import useScreenSize from "../../../hooks/useScreenSize";
 import { useNavigation } from "@react-navigation/native";
+import { MainApiContext } from "../../../contexts/ApiContexts";
+
+import currencyLogos from "../../../assets/images/currencies";
 
 export default function ListByCards({ theme }) {
   const isSmallDevice = useScreenSize();
   const navigation = useNavigation();
+
+  const { currencies = [], setCurrency } = useContext(MainApiContext);
 
   return (
     <View
@@ -23,8 +28,9 @@ export default function ListByCards({ theme }) {
           flexWrap: "wrap",
         }}
       >
-        {[1, 2, 3, 4, 5].map((hh) => (
+        {currencies.map((currency, index) => (
           <View
+            key={currency.currency}
             style={{
               width: isSmallDevice ? "100%" : "49%",
               paddingVertical: 15,
@@ -53,18 +59,29 @@ export default function ListByCards({ theme }) {
                 <View style={{ paddingRight: 20 }}>
                   <View style={{ height: 40, width: 40 }}>
                     <Image
-                      source={require("../../../assets/images/currencies/bitcoin.png")}
+                      source={currencyLogos[currency.currency]}
                       style={{ height: undefined, width: undefined, flex: 1 }}
                     />
                   </View>
                 </View>
 
                 <View style={{ width: "100%" }}>
-                  <Text>Bitcoin (BTC) </Text>
+                  <Text>
+                    {currency.display_name} ({currency.currency}){" "}
+                  </Text>
 
                   <View style={{}}>
-                    <Text>NGN 18,000,000.00 </Text>
-                    <Text status="danger">-1.77%</Text>
+                    <Text>
+                      NGN{" "}
+                      {(currency.price * currency.buy_rate).toLocaleString()}{" "}
+                    </Text>
+                    <Text
+                      status={
+                        currency.change_percentage >= 0 ? "success" : "danger"
+                      }
+                    >
+                      {currency.change_percentage} %
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -81,7 +98,7 @@ export default function ListByCards({ theme }) {
                   }}
                 >
                   <Text>Buy Rate</Text>
-                  <Text>1,000,000</Text>
+                  <Text>{currency.buy_rate}/NGN</Text>
                 </View>
                 <View
                   style={{
@@ -98,8 +115,8 @@ export default function ListByCards({ theme }) {
                     justifyContent: "center",
                   }}
                 >
-                  <Text>Buy Rate</Text>
-                  <Text>1,000,000</Text>
+                  <Text>Sell Rate</Text>
+                  <Text>{currency.sell_rate}/NGN</Text>
                 </View>
               </View>
 
@@ -111,7 +128,13 @@ export default function ListByCards({ theme }) {
                   paddingTop: 15,
                 }}
               >
-                <Button size="small" onPress={() => navigation.navigate("Buy")}>
+                <Button
+                  size="small"
+                  onPress={() => {
+                    setCurrency(currency);
+                    navigation.navigate("Buy", { currency: currency.currency });
+                  }}
+                >
                   Trade
                 </Button>
               </View>
