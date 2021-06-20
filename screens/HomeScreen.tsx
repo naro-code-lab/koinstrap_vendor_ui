@@ -66,7 +66,7 @@ function NavBar({ theme, current = "single-nav", settings }) {
   });
 }
 
-function HeroBanner({ theme, current = "full-color", settings }) {
+function HeroBanner({ theme, current = "split-color", settings }) {
   const { intro, tagline, ...rest } = settings.theme;
 
   return renderSwitch(current, {
