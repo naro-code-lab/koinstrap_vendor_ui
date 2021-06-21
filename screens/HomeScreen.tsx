@@ -10,15 +10,12 @@ import ListByTable from "./components/currency-list/ListByTable";
 import ListByCards from "./components/currency-list/ListByCards";
 import SingleNav from "./components/navbars/SingleNav";
 import SplitNav from "./components/navbars/SplitNav";
-import { useNavigation } from "@react-navigation/core";
 import { MainApiContext } from "../contexts/ApiContexts";
 
 export default function HomeScreen() {
   const theme = useTheme();
 
   const { settings } = useContext(MainApiContext);
-
-  console.log({ settings });
 
   return (
     <Layout style={{ flex: 1 }}>

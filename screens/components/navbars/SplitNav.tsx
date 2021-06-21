@@ -4,6 +4,8 @@ import { View, TouchableOpacity, Image } from "react-native";
 import useScreenSize from "../../../hooks/useScreenSize";
 import { useNavigation } from "@react-navigation/core";
 
+import { MainApiContext } from "../../../contexts/ApiContexts";
+
 export default function SplitNav({ theme }) {
   const small = useScreenSize();
   const navigation = useNavigation();
