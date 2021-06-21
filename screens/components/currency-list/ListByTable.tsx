@@ -32,6 +32,7 @@ export default function ListByTable({ theme }) {
             marginHorizontal: 10,
             padding: 15,
             borderRadius: 10,
+            elevation: 5,
           },
           isSmallDevice && {
             padding: 10,
