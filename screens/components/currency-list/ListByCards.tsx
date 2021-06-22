@@ -45,6 +45,7 @@ export default function ListByCards({ theme }) {
                 borderRadius: 10,
                 paddingVertical: 15,
                 borderColor: theme["outline-color"],
+                elevation: 5,
               }}
             >
               <View
