@@ -10,11 +10,7 @@ import useColorScheme from "./hooks/useColorScheme";
 import Template from "./screens";
 
 import * as eva from "@eva-design/eva";
-import {
-  ApplicationProvider,
-  IconRegistry,
-  Spinner,
-} from "@ui-kitten/components";
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 
 import ApiContext, { MainApiContext } from "./contexts/ApiContexts";

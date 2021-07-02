@@ -20,8 +20,8 @@ export default function ListByTable({ theme }) {
           {
             marginTop: 25,
             paddingBottom: 0,
-            marginBottom: 25,
-
+            marginBottom: 20,
+            // box-shadow: 0 29px 21px -34px rgb(23 49 84 / 82%)
             //   alignSelf: "center",
           },
           !isSmallDevice && {

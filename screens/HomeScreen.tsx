@@ -48,9 +48,10 @@ export default function HomeScreen() {
         />
 
         <View style={{ alignItems: "center", paddingVertical: 20 }}>
-          <Text category="s1">{`${
-            settings.name
-          } ${new Date().getFullYear()}`}</Text>
+          <Text category="s1">
+            © {`${new Date().getFullYear()} ${settings.name}`}. All rights
+            reserved.
+          </Text>
           {settings?.theme?.header.includes("image") && (
             <View
               style={{
