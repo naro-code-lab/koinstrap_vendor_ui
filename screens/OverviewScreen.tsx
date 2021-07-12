@@ -183,6 +183,7 @@ export default function OverviewScreen({ navigation }) {
                     flexDirection: "row",
                     alignItems: "center",
                     width: "100%",
+                    paddingBottom: 10,
                   }}
                 >
                   <View style={{ flex: 1 }}>
@@ -203,6 +204,15 @@ export default function OverviewScreen({ navigation }) {
                     />
                   </TouchableOpacity>
                 </View>
+
+                {order.memoTag ? (
+                  <>
+                    <Text category="h6">{order.currency} Address Memo/Tag</Text>
+                    <Text category="s1">{order.memoTag}</Text>
+                  </>
+                ) : (
+                  <></>
+                )}
               </View>
             </View>
           </>
