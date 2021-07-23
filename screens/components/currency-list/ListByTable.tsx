@@ -80,7 +80,11 @@ export default function ListByTable({ theme }) {
                 <Text appearance="hint" category="c1">
                   {currency.currency}
                 </Text>
-                {isSmallDevice && <Text>NGN 18,668,970.00</Text>}
+                {isSmallDevice && (
+                  <Text>
+                    NGN {(currency.price * currency.buy_rate).toLocaleString()}
+                  </Text>
+                )}
               </View>
 
               <View
