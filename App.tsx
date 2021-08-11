@@ -8,6 +8,7 @@ import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
 
 import Template from "./screens";
+import { default as mapping } from "./assets/mapping.json";
 
 import * as eva from "@eva-design/eva";
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
@@ -67,6 +68,7 @@ const AppWithLoading = ({ colorScheme }) => {
       <ApplicationProvider
         {...eva}
         theme={{ ...eva.light, ...(settings.theme?.colors || {}) }}
+        customMapping={mapping}
       >
         <Template colorScheme={colorScheme} />
         <StatusBar />
