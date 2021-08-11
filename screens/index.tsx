@@ -9,15 +9,24 @@ import OverviewScreen from "./OverviewScreen";
 import SearchScreen from "./SearchScreen";
 import SellScreen from "./SellScreen";
 
+import { Helmet } from "react-helmet";
+
 export default function Navigation({
   colorScheme,
 }: {
   colorScheme: ColorSchemeName;
 }) {
   return (
-    <NavigationContainer>
-      <RootNavigator />
-    </NavigationContainer>
+    <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Test</title>
+        <link rel="canonical" href="http://mysite.com/example" />
+      </Helmet>
+      <NavigationContainer>
+        <RootNavigator />
+      </NavigationContainer>
+    </>
   );
 }
 

@@ -6,12 +6,15 @@ import { useNavigation } from "@react-navigation/native";
 import { MainApiContext } from "../../../contexts/ApiContexts";
 
 import currencyLogos from "../../../assets/images/currencies";
+import { useAlert } from "react-alert";
 
 export default function ListByCards({ theme }) {
   const isSmallDevice = useScreenSize();
   const navigation = useNavigation();
 
-  const { currencies = [], setCurrency } = useContext(MainApiContext);
+  const alert = useAlert();
+
+  const { currencies = [], setCurrency, settings } = useContext(MainApiContext);
 
   return (
     <View
@@ -132,6 +135,12 @@ export default function ListByCards({ theme }) {
                 <Button
                   size="small"
                   onPress={() => {
+                    if (!settings.is_available) {
+                      alert.error(
+                        "Trading is temporarily disabled, Kindly try again later."
+                      );
+                      return;
+                    }
                     setCurrency(currency);
                     navigation.navigate("Buy", { currency: currency.currency });
                   }}

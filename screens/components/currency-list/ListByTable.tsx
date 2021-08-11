@@ -4,6 +4,7 @@ import { View, TouchableOpacity, Image } from "react-native";
 import useScreenSize from "../../../hooks/useScreenSize";
 import { useNavigation } from "@react-navigation/core";
 import { MainApiContext } from "../../../contexts/ApiContexts";
+import { useAlert } from "react-alert";
 
 import currencyLogos from "../../../assets/images/currencies";
 
@@ -11,7 +12,9 @@ export default function ListByTable({ theme }) {
   const isSmallDevice = useScreenSize();
   const navigation = useNavigation();
 
-  const { currencies = [], setCurrency } = useContext(MainApiContext);
+  const alert = useAlert();
+
+  const { currencies = [], setCurrency, settings } = useContext(MainApiContext);
 
   return (
     <View style={[!isSmallDevice && { alignItems: "center" }]}>
@@ -43,6 +46,12 @@ export default function ListByTable({ theme }) {
           <CanPressOrNot
             isSmallDevice={isSmallDevice}
             onPress={() => {
+              if (!settings.is_available) {
+                alert.error(
+                  "Trading is temporarily disabled, Kindly try again later."
+                );
+                return;
+              }
               setCurrency(currency);
               navigation.navigate("Buy", { currency: currency.currency });
             }}
@@ -127,6 +136,12 @@ export default function ListByTable({ theme }) {
                   <Button
                     size="small"
                     onPress={() => {
+                      if (!settings.is_available) {
+                        alert.error(
+                          "Trading is temporarily disabled, Kindly try again later."
+                        );
+                        return;
+                      }
                       setCurrency(currency);
                       navigation.navigate("Buy", {
                         currency: currency.currency,

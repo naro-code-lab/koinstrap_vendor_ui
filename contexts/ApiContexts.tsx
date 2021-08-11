@@ -215,7 +215,7 @@ function ApiContext_({ children }) {
       is_fiat: isFiat,
       currency: currency.currency,
       memoTag,
-      phoneNumber,
+      phone_number: phoneNumber,
     });
 
     if (buyRequestPayload?.reference) {
@@ -229,6 +229,10 @@ function ApiContext_({ children }) {
       alert.error(
         buyRequestPayload.errors[Object.keys(buyRequestPayload.errors)[0]][0]
       );
+    }
+
+    if (buyRequestPayload.message == "Vendor cannont receive payments") {
+      alert.error("Can't receive payments, kindly contact support.");
     }
 
     return {
@@ -285,7 +289,7 @@ function ApiContext_({ children }) {
       account_number: accountNumber,
       is_fiat: isFiat,
       currency: currency.currency,
-      phoneNumber,
+      phone_number: phoneNumber,
     });
 
     if (buyRequestPayload?.reference) {
