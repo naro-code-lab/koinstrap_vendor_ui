@@ -48,7 +48,7 @@ const contextInitial = {
 export const MainApiContext = React.createContext(contextInitial);
 const fpPromise = FingerprintJS.load();
 
-export const domain = "koinstrap.test";
+export const domain = "koinstrap.com";
 
 export const requestHostInterceptor = () => (client) => async (action) => {
   const fp = await fpPromise;
