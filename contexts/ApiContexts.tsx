@@ -49,7 +49,7 @@ export const MainApiContext = React.createContext(contextInitial);
 const fpPromise = FingerprintJS.load();
 
 export const protocol = "https";
-export const domain = "4givhabcp4.sharedwithexpose.com";
+export const domain = "koinstrap.com";
 
 export const requestHostInterceptor = () => (client) => async (action) => {
 	const fp = await fpPromise;

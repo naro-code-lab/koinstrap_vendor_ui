@@ -97,7 +97,7 @@
 					loadingSellRequest: !1,
 				}),
 				C = v.a.load(),
-				P = "4givhabcp4.sharedwithexpose.com",
+				P = "koinstrap.com",
 				B = Object(x.createClient)({
 					requestInterceptors: [
 						function (e) {
