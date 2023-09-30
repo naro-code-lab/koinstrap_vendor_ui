@@ -21,13 +21,13 @@ import Clipboard from "expo-clipboard";
 
 import ModalContainer from "./components/ModalContainer";
 import useScreenSize from "../hooks/useScreenSize";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import { MainApiContext } from "../contexts/ApiContexts";
 
 export default function SellScreen({ navigation }) {
   const theme = useTheme();
   const small = useScreenSize();
-  const alert = useAlert();
+  // const alert = useAlert();
   const {
     currency,
     sellCrypto,

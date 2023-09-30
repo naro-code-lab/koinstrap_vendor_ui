@@ -7,7 +7,7 @@ import {
 	useParameterizedQuery,
 } from "react-fetching-library";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { useAlert } from "react-alert";
+// import { useAlert } from "react-alert";
 import * as Validator from "validatorjs";
 const addressValidator = require("@swyftx/api-crypto-address-validator");
 
@@ -110,7 +110,7 @@ function ApiContext_({ children }) {
 	const [currency, setCurrency] = useState(null);
 	const [order, setOrder] = useState(null);
 
-	const alert = useAlert();
+	// const alert = useAlert();
 
 	const {
 		loading: loadingSettings,
@@ -165,9 +165,9 @@ function ApiContext_({ children }) {
 		network,
 	}) => {
 		if (!addressValidator.validate(address, currency.currency)) {
-			return alert.error(
-				"Please enter a valid " + currency.display_name + " address"
-			);
+			// return alert.error(
+			// 	"Please enter a valid " + currency.display_name + " address"
+			// );
 		}
 
 		const validator = new Validator(
